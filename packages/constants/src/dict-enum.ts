@@ -125,6 +125,16 @@ const CRM_DICT = {
   CRM_RECEIVABLE_RETURN_TYPE: 'crm_receivable_return_type', // CRM 回款的还款方式
 } as const;
 
+/** ========== BLOG - 博客模块 ========== */
+const BLOG_DICT = {
+  BLOG_ARTICLE_STATUS: 'blog_article_status', // 文章状态
+  BLOG_ARTICLE_TYPE: 'blog_article_type', // 文章类型
+  BLOG_COMMENT_CHECK_STATUS: 'blog_comment_check_status', // 评论审核状态
+  BLOG_MESSAGE_CHECK_STATUS: 'blog_message_check_status', // 留言审核状态
+  BLOG_LINK_CHECK_STATUS: 'blog_link_check_status', // 友链审核状态
+  BLOG_FAVORITE_STATUS: 'blog_favorite_status', // 收藏状态
+} as const;
+
 /** ========== ERP - 企业资源计划模块 ========== */
 const ERP_DICT = {
   ERP_AUDIT_STATUS: 'erp_audit_status', // ERP 审批状态
@@ -282,6 +292,7 @@ const WMS_DICT = {
 /** 字典类型枚举 - 统一导出 */
 const DICT_TYPE = {
   ...AI_DICT,
+  ...BLOG_DICT,
   ...BPM_DICT,
   ...CRM_DICT,
   ...ERP_DICT,

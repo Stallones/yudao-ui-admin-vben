@@ -35,6 +35,14 @@ async function bootstrap(namespace: string) {
   // });
 
   const app = createApp(App);
+
+  // 全局错误捕获：防止单个组件在渲染/卸载期的未捕获错误（如 reka-ui Portal
+  // 在 <Transition mode="out-in"> 下与 Vue DOM 移除的 parentNode 冲突）拖垮整个 SPA，
+  // 导致后续所有路由跳转全部失败。仅记录日志，不向上抛出。
+  app.config.errorHandler = (err, _instance, info) => {
+    console.error('[Global error captured]', info, err);
+  };
+
   app.use(VueDOMPurifyHTML);
 
   // 注册v-loading指令
