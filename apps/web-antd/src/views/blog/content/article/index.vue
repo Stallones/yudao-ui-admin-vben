@@ -31,12 +31,12 @@ function handleEdit(row: BlogArticleApi.Article) {
 
 async function handleDelete(row: BlogArticleApi.Article) {
   const hideLoading = message.loading({
-    content: $t('ui.actionMessage.deleting', [row.title]),
+    content: $t('ui.actionMessage.deleting', [row.articleTitle]),
     duration: 0,
   });
   try {
     await deleteArticle(row.id!);
-    message.success($t('ui.actionMessage.deleteSuccess', [row.title]));
+    message.success($t('ui.actionMessage.deleteSuccess', [row.articleTitle]));
     gridApi.query();
   } finally {
     hideLoading();
@@ -114,7 +114,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
               icon: ACTION_ICON.DELETE,
               auth: ['blog:article:delete'],
               popConfirm: {
-                title: $t('ui.actionMessage.deleteConfirm', [row.title]),
+                title: $t('ui.actionMessage.deleteConfirm', [row.articleTitle]),
                 confirm: handleDelete.bind(null, row),
               },
             },
