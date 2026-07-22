@@ -186,6 +186,12 @@ const multiFormFieldOptions = computed(() => {
     (item) => item.type === 'select' || item.type === 'checkbox',
   );
 });
+const multiInstanceSourceNumber = computed({
+  get: () => Number(configForm.value.multiInstanceSource || 1),
+  set: (value?: number) => {
+    configForm.value.multiInstanceSource = String(value || '');
+  },
+});
 const childFormFieldOptions = ref<any[]>([]);
 
 /** 保存配置 */
@@ -199,7 +205,9 @@ const saveConfig = async () => {
     (option) => option.key === configForm.value.calledProcessDefinitionKey,
   );
 
-  currentNode.value.name = nodeName.value!;
+  if (nodeName.value) {
+    currentNode.value.name = nodeName.value;
+  }
   if (currentNode.value.childProcessSetting) {
     // 1. 是否异步
     currentNode.value.childProcessSetting.async = configForm.value.async;
@@ -681,7 +689,6 @@ onMounted(async () => {
                     class="w-24"
                     v-model:value="configForm.timeDuration"
                     :min="1"
-                    controls-position="right"
                   />
                 </FormItem>
               </Col>
@@ -805,10 +812,7 @@ onMounted(async () => {
               trigger: 'change',
             }"
           >
-            <InputNumber
-              v-model:value="configForm.multiInstanceSource"
-              :min="1"
-            />
+            <InputNumber v-model:value="multiInstanceSourceNumber" :min="1" />
           </FormItem>
           <FormItem
             v-if="

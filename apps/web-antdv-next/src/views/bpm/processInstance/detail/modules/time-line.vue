@@ -30,12 +30,14 @@ defineOptions({ name: 'BpmProcessInstanceTimeline' });
 const props = withDefaults(
   defineProps<{
     activityNodes: BpmProcessInstanceApi.ApprovalNodeInfo[]; // 审批节点信息
+    embedded?: boolean; // 是否嵌入表单使用（缩小顶部内边距，避免与表单项 label 间距过大）
     enableApproveUserSelect?: boolean; // 是否开启审批人自选功能
     showStatusIcon?: boolean; // 是否显示头像右下角状态图标
   }>(),
   {
     showStatusIcon: true, // 默认值为 true
     enableApproveUserSelect: false, // 默认值为 false
+    embedded: false, // 默认值为 false
   },
 );
 
@@ -202,9 +204,17 @@ function shouldShowCustomUserSelect(
 }
 
 /** 判断是否需要显示审批意见和附件 */
-function shouldShowReasonAndAttachment(task: any, nodeType: BpmNodeTypeEnum) {
+function shouldShowReasonAndAttachment(
+  task: any,
+  nodeType: BpmNodeTypeEnum,
+  nodeIndex: number,
+) {
+  // 第一个发起人节点是系统自动通过的，不展示审批意见；
+  if (nodeType === BpmNodeTypeEnum.START_USER_NODE && nodeIndex === 0) {
+    return false;
+  }
   return (
-    (task.reason || task.attachments?.length > 0) &&
+    Boolean(task.reason || task.attachments?.length > 0) &&
     [BpmNodeTypeEnum.START_USER_NODE, BpmNodeTypeEnum.USER_TASK_NODE].includes(
       nodeType,
     )
@@ -212,11 +222,17 @@ function shouldShowReasonAndAttachment(task: any, nodeType: BpmNodeTypeEnum) {
 }
 
 function getAttachmentName(url: string) {
-  return decodeURIComponent(url.slice(url.lastIndexOf('/') + 1));
+  const cleanUrl = url.split(/[?#]/)[0] || '';
+  const fileName = cleanUrl.slice(cleanUrl.lastIndexOf('/') + 1);
+  try {
+    return decodeURIComponent(fileName);
+  } catch {
+    return fileName;
+  }
 }
 
 function isImageAttachment(url: string) {
-  const ext = url.split('.').pop()?.toLowerCase();
+  const ext = url.split(/[?#]/)[0]?.split('.').pop()?.toLowerCase();
   return ['bmp', 'gif', 'jpeg', 'jpg', 'png', 'webp'].includes(ext || '');
 }
 
@@ -247,7 +263,7 @@ defineExpose({ setCustomApproveUsers, batchSetCustomApproveUsers });
 
 <template>
   <div>
-    <Timeline class="pt-5">
+    <Timeline :class="embedded ? 'pt-2' : 'pt-5'">
       <!-- 遍历每个审批节点 -->
       <TimelineItem
         v-for="(activity, index) in activityNodes"
@@ -421,7 +437,9 @@ defineExpose({ setCustomApproveUsers, batchSetCustomApproveUsers });
 
               <!-- 审批意见、附件和签名 -->
               <div
-                v-if="shouldShowReasonAndAttachment(task, activity.nodeType)"
+                v-if="
+                  shouldShowReasonAndAttachment(task, activity.nodeType, index)
+                "
                 class="mt-1 w-full rounded-md bg-gray-100 p-2 text-sm text-gray-500"
               >
                 <div v-if="task.reason">审批意见：{{ task.reason }}</div>

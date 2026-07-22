@@ -79,7 +79,6 @@ export namespace BpmProcessInstanceApi {
   export interface ApprovalTaskInfo {
     id: number;
     assigneeUser: User;
-    attachments?: string[];
     ownerUser: User;
     reason: string;
     signPicUrl: string;

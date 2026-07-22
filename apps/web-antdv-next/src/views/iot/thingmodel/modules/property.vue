@@ -113,7 +113,7 @@ if (!props.isStructDataSpecs && !props.isParams) {
       @change="handleChange"
       :options="[
         ...dataTypeOptions.map((option) => ({
-          label: `{{ \`${option.value}(${option.label})\` }}`,
+          label: `${option.value}(${option.label})`,
           value: option.value,
         })),
       ]"
@@ -163,7 +163,7 @@ if (!props.isStructDataSpecs && !props.isParams) {
     label="数据长度"
   >
     <Input
-      v-model:value="property.dataSpecs.length"
+      v-model:value="property.dataSpecs!.length"
       class="!w-[255px]"
       placeholder="请输入文本字节长度"
     >

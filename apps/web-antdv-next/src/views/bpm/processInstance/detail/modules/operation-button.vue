@@ -94,6 +94,24 @@ const popOverVisible: any = ref({
   deleteSign: false,
 }); // 气泡卡是否展示
 const returnList = ref([] as any); // 退回节点
+const APPROVAL_ATTACHMENT_FILE_TYPES = [
+  'doc',
+  'docx',
+  'xls',
+  'xlsx',
+  'ppt',
+  'pptx',
+  'txt',
+  'pdf',
+  'jpg',
+  'jpeg',
+  'png',
+  'gif',
+  'bmp',
+  'webp',
+];
+const APPROVAL_ATTACHMENT_FILE_SIZE = 5;
+const APPROVAL_ATTACHMENT_DIRECTORY = 'bpm/task-attachment';
 
 /** 创建流程表达式 */
 function openSignatureModal() {
@@ -335,7 +353,9 @@ async function initNextAssigneesFormField() {
           BpmCandidateStrategyEnum.START_USER_SELECT ===
             node.candidateStrategy) ||
         // 情况二：当前节点是审批人自选
-        BpmCandidateStrategyEnum.APPROVE_USER_SELECT === node.candidateStrategy
+        (isEmpty(node.candidateUsers) &&
+          BpmCandidateStrategyEnum.APPROVE_USER_SELECT ===
+            node.candidateStrategy)
       ) {
         nextAssigneesActivityNode.value.push(node);
       }
@@ -377,7 +397,10 @@ function validateNextAssignees() {
   }
   // 如果需要自选审批人，则校验每个节点是否都已配置审批人
   for (const item of nextAssigneesActivityNode.value) {
-    if (isEmpty(approveReasonForm.nextAssignees[item.id])) {
+    if (
+      isEmpty(item.candidateUsers) &&
+      isEmpty(approveReasonForm.nextAssignees[item.id])
+    ) {
       message.warning('下一个节点的审批人不能为空!');
       return false;
     }
@@ -858,9 +881,10 @@ defineExpose({ loadTodoTask });
                 name="nextAssignees"
                 v-if="nextAssigneesActivityNode.length > 0"
               >
-                <div class="-mb-8 -mt-3.5 ml-2.5">
+                <div class="ml-2.5">
                   <ProcessInstanceTimeline
                     ref="nextAssigneesTimelineRef"
+                    embedded
                     :activity-nodes="nextAssigneesActivityNode"
                     :show-status-icon="false"
                     :enable-approve-user-select="true"
@@ -895,8 +919,12 @@ defineExpose({ loadTodoTask });
               <FormItem label="上传附件/图片" name="attachments">
                 <FileUpload
                   v-model:value="approveReasonForm.attachments"
+                  :accept="APPROVAL_ATTACHMENT_FILE_TYPES"
+                  :directory="APPROVAL_ATTACHMENT_DIRECTORY"
                   :max-number="10"
+                  :max-size="APPROVAL_ATTACHMENT_FILE_SIZE"
                   :multiple="true"
+                  :show-description="true"
                   :show-download-icon="false"
                   help-text="支持多文件/图片上传"
                   @preview="handleFilePreview"
@@ -962,8 +990,12 @@ defineExpose({ loadTodoTask });
               <FormItem label="上传附件/图片" name="attachments">
                 <FileUpload
                   v-model:value="rejectReasonForm.attachments"
+                  :accept="APPROVAL_ATTACHMENT_FILE_TYPES"
+                  :directory="APPROVAL_ATTACHMENT_DIRECTORY"
                   :max-number="10"
+                  :max-size="APPROVAL_ATTACHMENT_FILE_SIZE"
                   :multiple="true"
+                  :show-description="true"
                   help-text="支持多文件/图片上传"
                   @preview="handleFilePreview"
                 />

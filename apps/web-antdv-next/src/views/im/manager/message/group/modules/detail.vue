@@ -23,7 +23,9 @@ import {
 import { MessageContentPreview } from '../..';
 
 const visible = ref(false);
-const detail = ref<ImManagerGroupMessageApi.GroupMessage>({} as ImManagerGroupMessageApi.GroupMessage);
+const detail = ref<ImManagerGroupMessageApi.GroupMessage>(
+  {} as ImManagerGroupMessageApi.GroupMessage,
+);
 
 /** 打开详情 */
 function open(row: ImManagerGroupMessageApi.GroupMessage) {
@@ -35,7 +37,12 @@ defineExpose({ open });
 </script>
 
 <template>
-  <Modal v-model:open="visible" :footer="null" title="群聊消息详情" width="700px">
+  <Modal
+    v-model:open="visible"
+    :footer="null"
+    title="群聊消息详情"
+    width="700px"
+  >
     <Descriptions bordered :column="2">
       <DescriptionsItem label="编号">{{ detail.id }}</DescriptionsItem>
       <DescriptionsItem label="客户端编号">
@@ -53,7 +60,11 @@ defineExpose({ open });
       <DescriptionsItem label="状态">
         <DictTag :type="DICT_TYPE.IM_MESSAGE_STATUS" :value="detail.status" />
       </DescriptionsItem>
-      <DescriptionsItem v-if="MESSAGE_GROUP_READ_ENABLED" label="回执" :span="2">
+      <DescriptionsItem
+        v-if="MESSAGE_GROUP_READ_ENABLED"
+        label="回执"
+        :span="2"
+      >
         <DictTag
           :type="DICT_TYPE.IM_MESSAGE_RECEIPT_STATUS"
           :value="detail.receiptStatus"
@@ -62,7 +73,7 @@ defineExpose({ open });
       <DescriptionsItem label="@用户" :span="2">
         <template v-if="detail.atUserIds?.length">
           <span v-for="(userId, index) in detail.atUserIds" :key="userId">
-            <span v-if="index > 0">、</span>
+            <span v-if="Number(index) > 0">、</span>
             <template v-if="userId === IM_AT_ALL_USER_ID">
               @{{ IM_AT_ALL_NICKNAME }}
             </template>
@@ -85,7 +96,11 @@ defineExpose({ open });
         />
       </DescriptionsItem>
       <DescriptionsItem label="原始 JSON" :span="2">
-        <pre class="m-0 whitespace-pre-wrap break-all rounded bg-gray-100 p-2 font-mono text-xs">{{ formatJsonText(detail.content) }}</pre>
+        <pre
+          class="m-0 whitespace-pre-wrap break-all rounded bg-gray-100 p-2 font-mono text-xs"
+        >
+          {{ formatJsonText(detail.content) }}
+        </pre>
       </DescriptionsItem>
     </Descriptions>
   </Modal>

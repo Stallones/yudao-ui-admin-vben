@@ -16,6 +16,7 @@ export namespace SystemUserApi {
     sex: number;
     avatar: string;
     loginIp: string;
+    loginDate?: Date;
     status: number;
     remark: string;
     createTime?: Date;
@@ -38,6 +39,13 @@ export function getUserPage(params: PageParam) {
 /** 查询用户详情 */
 export function getUser(id: number) {
   return requestClient.get<SystemUserApi.User>(`/system/user/get?id=${id}`);
+}
+
+/** 查询用户列表 */
+export function getUserList(ids: number[]) {
+  return requestClient.get<SystemUserApi.User[]>('/system/user/list', {
+    params: { ids: ids.join(',') },
+  });
 }
 
 /** 新增用户 */
@@ -88,13 +96,6 @@ export function updateUserStatus(id: number, status: number) {
   return requestClient.put('/system/user/update-status', { id, status });
 }
 
-/** 查询用户列表 */
-export function getUserList(ids: number[]) {
-  return requestClient.get<SystemUserApi.User[]>('/system/user/list', {
-    params: { ids: ids.join(',') },
-  });
-}
-
 /** 获取用户精简信息列表 */
 export function getSimpleUserList() {
   return requestClient.get<SystemUserApi.User[]>('/system/user/simple-list');
@@ -102,15 +103,20 @@ export function getSimpleUserList() {
 
 /** 按用户编号查询用户精简信息 */
 export function getSimpleUser(id: number | string) {
-  return requestClient.get<SystemUserApi.UserSimple>('/system/user/get-simple', {
-    params: { id },
-  });
+  return requestClient.get<SystemUserApi.UserSimple>(
+    '/system/user/get-simple',
+    {
+      params: { id },
+    },
+  );
 }
 
 /** 按昵称模糊搜索用户 */
 export function getSimpleUserListByNickname(nickname: string) {
   return requestClient.get<SystemUserApi.UserSimple[]>(
     '/system/user/list-by-nickname',
-    { params: { nickname } },
+    {
+      params: { nickname },
+    },
   );
 }

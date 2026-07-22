@@ -47,7 +47,9 @@ const [Grid] = useVbenVxeGrid({
           return await getManagerGroupMessagePage({
             pageNo: page.currentPage,
             pageSize: page.pageSize,
-            groupId: route.query.groupId ? Number(route.query.groupId) : undefined,
+            groupId: route.query.groupId
+              ? Number(route.query.groupId)
+              : undefined,
             ...formValues,
           });
         },
@@ -78,9 +80,13 @@ const [Grid] = useVbenVxeGrid({
       <template #atUsers="{ row }">
         <template v-if="row.atUserIds?.length">
           <span v-for="(userId, index) in row.atUserIds" :key="userId">
-            <span v-if="index > 0">、</span>
-            <template v-if="userId === IM_AT_ALL_USER_ID">@{{ IM_AT_ALL_NICKNAME }}</template>
-            <template v-else>@{{ row.atUserNicknames?.[index] || userId }}</template>
+            <span v-if="Number(index) > 0">、</span>
+            <template v-if="userId === IM_AT_ALL_USER_ID">
+              @{{ IM_AT_ALL_NICKNAME }}
+            </template>
+            <template v-else>
+              @{{ row.atUserNicknames?.[index] || userId }}
+            </template>
           </span>
         </template>
         <span v-else>-</span>

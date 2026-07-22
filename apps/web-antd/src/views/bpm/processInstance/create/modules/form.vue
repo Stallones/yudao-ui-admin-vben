@@ -64,8 +64,8 @@ const detailForm = ref<ProcessFormData>({
 const fApi = ref<any>();
 
 const startUserSelectTasks = ref<UserTask[]>([]);
-const startUserSelectAssignees = ref<Record<string, string[]>>({});
-const tempStartUserSelectAssignees = ref<Record<string, string[]>>({});
+const startUserSelectAssignees = ref<Record<string, number[]>>({});
+const tempStartUserSelectAssignees = ref<Record<string, number[]>>({});
 
 const bpmnXML = ref<string | undefined>(undefined);
 const simpleJson = ref<string | undefined>(undefined);
@@ -132,7 +132,7 @@ async function initProcessInfo(row: any, formVariables?: any) {
     if (formVariables) {
       for (const key in formVariables) {
         if (!allowedFields.has(key)) {
-          delete formVariables[key];
+          delete formVariables.key;
         }
       }
     }
@@ -293,6 +293,7 @@ defineExpose({ initProcessInfo });
             class="flex-1 overflow-auto"
           >
             <form-create
+              v-if="detailForm.rule.length > 0"
               :rule="detailForm.rule"
               v-model:api="fApi"
               v-model="detailForm.value"
