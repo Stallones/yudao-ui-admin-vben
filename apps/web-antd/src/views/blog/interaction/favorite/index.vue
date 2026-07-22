@@ -4,15 +4,17 @@ import type { BlogFavoriteApi } from '#/api/blog/interaction/favorite';
 
 import { ref } from 'vue';
 import { confirm, Page } from '@vben/common-ui';
-
-defineOptions({ name: 'BlogFavorite' });
 import { isEmpty } from '@vben/utils';
 import { message } from 'ant-design-vue';
 
 import { ACTION_ICON, TableAction, useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deleteFavorite, getFavoritePage } from '#/api/blog/interaction/favorite';
 import { $t } from '#/locales';
+
 import { useGridColumns, useGridFormSchema } from './data';
+
+/** 收藏管理 */
+defineOptions({ name: 'BlogFavorite' });
 
 async function handleDelete(row: BlogFavoriteApi.Favorite) {
   const hideLoading = message.loading({
@@ -35,14 +37,14 @@ function handleRowCheckboxChange({ records }: { records: BlogFavoriteApi.Favorit
 
 async function handleBatchDelete() {
   if (isEmpty(checkedIds.value)) return;
-  confirm({
-    content: $t('ui.actionMessage.deleteConfirm', [`选中的 ${checkedIds.value.length} 条`]),
-    async onConfirm() {
-      await Promise.all(checkedIds.value.map((id) => deleteFavorite(id)));
-      message.success($t('ui.actionMessage.deleteSuccess', ['批量数据']));
-      gridApi.query();
-    },
-  });
+  try {
+    await confirm($t('ui.actionMessage.deleteConfirm', [`选中的 ${checkedIds.value.length} 条`]));
+  } catch {
+    return;
+  }
+  await Promise.all(checkedIds.value.map((id) => deleteFavorite(id)));
+  message.success($t('ui.actionMessage.deleteSuccess', ['批量数据']));
+  gridApi.query();
 }
 
 const [Grid, gridApi] = useVbenVxeGrid({

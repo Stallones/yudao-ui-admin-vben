@@ -11,8 +11,6 @@ import { DICT_TYPE } from '@vben/constants';
 import { getDictOptions } from '@vben/hooks';
 import { Page } from '@vben/common-ui';
 
-defineOptions({ name: 'BlogArticlePublish' });
-
 import {
   createArticle,
   getArticle,
@@ -20,6 +18,9 @@ import {
 } from '#/api/blog/content/article';
 import { getCategoryList } from '#/api/blog/content/category';
 import { getTagPage } from '#/api/blog/content/tag';
+
+/** 文章发布/编辑 */
+defineOptions({ name: 'BlogArticlePublish' });
 
 const route = useRoute();
 const router = useRouter();

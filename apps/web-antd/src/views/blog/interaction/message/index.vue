@@ -8,14 +8,17 @@ import { isEmpty } from '@vben/utils';
 import { Descriptions, DescriptionsItem, message } from 'ant-design-vue';
 
 import { ACTION_ICON, TableAction, useVbenVxeGrid } from '#/adapter/vxe-table';
-defineOptions({ name: 'BlogMessage' });
 import {
   deleteMessage,
   getMessagePage,
   updateMessageCheck,
 } from '#/api/blog/interaction/message';
 import { $t } from '#/locales';
+
 import { useGridColumns, useGridFormSchema } from './data';
+
+/** 留言管理 */
+defineOptions({ name: 'BlogMessage' });
 
 async function handleAudit(row: BlogMessageApi.Message, isCheck: number) {
   const hideLoading = message.loading({ content: '处理中...', duration: 0 });
@@ -49,14 +52,14 @@ function handleRowCheckboxChange({ records }: { records: BlogMessageApi.Message[
 
 async function handleBatchDelete() {
   if (isEmpty(checkedIds.value)) return;
-  confirm({
-    content: $t('ui.actionMessage.deleteConfirm', [`选中的 ${checkedIds.value.length} 条`]),
-    async onConfirm() {
-      await Promise.all(checkedIds.value.map((id) => deleteMessage(id)));
-      message.success($t('ui.actionMessage.deleteSuccess', ['批量数据']));
-      gridApi.query();
-    },
-  });
+  try {
+    await confirm($t('ui.actionMessage.deleteConfirm', [`选中的 ${checkedIds.value.length} 条`]));
+  } catch {
+    return;
+  }
+  await Promise.all(checkedIds.value.map((id) => deleteMessage(id)));
+  message.success($t('ui.actionMessage.deleteSuccess', ['批量数据']));
+  gridApi.query();
 }
 
 const detail = ref<BlogMessageApi.Message | null>(null);

@@ -4,21 +4,21 @@ import type { BlogCategoryApi } from '#/api/blog/content/category';
 
 import { ref } from 'vue';
 import { confirm, Page, useVbenModal } from '@vben/common-ui';
-
-defineOptions({ name: 'BlogCategory' });
 import { isEmpty } from '@vben/utils';
 import { message } from 'ant-design-vue';
 
 import { ACTION_ICON, TableAction, useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  createCategory,
   deleteCategory,
   getCategoryList,
-  updateCategory,
 } from '#/api/blog/content/category';
 import { $t } from '#/locales';
-import { useFormSchema, useGridColumns, useGridFormSchema } from './data';
+
+import { useGridColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
+
+/** 分类管理 */
+defineOptions({ name: 'BlogCategory' });
 
 const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
@@ -57,14 +57,14 @@ function handleRowCheckboxChange({ records }: { records: BlogCategoryApi.Categor
 
 async function handleBatchDelete() {
   if (isEmpty(checkedIds.value)) return;
-  confirm({
-    content: $t('ui.actionMessage.deleteConfirm', [`选中的 ${checkedIds.value.length} 条`]),
-    async onConfirm() {
-      await Promise.all(checkedIds.value.map((id) => deleteCategory(id)));
-      message.success($t('ui.actionMessage.deleteSuccess', ['批量数据']));
-      handleRefresh();
-    },
-  });
+  try {
+    await confirm($t('ui.actionMessage.deleteConfirm', [`选中的 ${checkedIds.value.length} 条`]));
+  } catch {
+    return;
+  }
+  await Promise.all(checkedIds.value.map((id) => deleteCategory(id)));
+  message.success($t('ui.actionMessage.deleteSuccess', ['批量数据']));
+  handleRefresh();
 }
 
 const [Grid, gridApi] = useVbenVxeGrid({
@@ -75,7 +75,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     keepSource: true,
     proxyConfig: {
       ajax: {
-        query: async ({ page }, formValues) => {
+        query: async () => {
           const list = await getCategoryList();
           return { list, total: list.length };
         },

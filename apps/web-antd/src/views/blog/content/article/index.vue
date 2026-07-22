@@ -3,9 +3,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { BlogArticleApi } from '#/api/blog/content/article';
 
 import { useRouter } from 'vue-router';
-import { confirm, Page, useVbenDrawer } from '@vben/common-ui';
-
-defineOptions({ name: 'BlogArticle' });
+import { Page } from '@vben/common-ui';
 import { message } from 'ant-design-vue';
 
 import { ACTION_ICON, TableAction, useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -15,11 +13,13 @@ import {
   updateArticleStatus,
 } from '#/api/blog/content/article';
 import { $t } from '#/locales';
+
 import { useGridColumns, useGridFormSchema } from './data';
 
-const router = useRouter();
+/** 文章管理 */
+defineOptions({ name: 'BlogArticle' });
 
-const [Drawer, drawerApi] = useVbenDrawer({});
+const router = useRouter();
 
 function handleCreate() {
   router.push('/blog/article/publish');
@@ -75,7 +75,6 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 <template>
   <Page auto-content-height>
-    <Drawer />
     <Grid table-title="文章列表">
       <template #toolbar-tools>
         <TableAction

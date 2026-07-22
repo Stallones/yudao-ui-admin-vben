@@ -8,14 +8,17 @@ import { isEmpty } from '@vben/utils';
 import { Descriptions, DescriptionsItem, message } from 'ant-design-vue';
 
 import { ACTION_ICON, TableAction, useVbenVxeGrid } from '#/adapter/vxe-table';
-defineOptions({ name: 'BlogComment' });
 import {
   deleteComment,
   getCommentPage,
   updateCommentCheck,
 } from '#/api/blog/interaction/comment';
 import { $t } from '#/locales';
+
 import { useGridColumns, useGridFormSchema } from './data';
+
+/** 评论管理 */
+defineOptions({ name: 'BlogComment' });
 
 async function handleAudit(row: BlogCommentApi.Comment, isCheck: number) {
   const hideLoading = message.loading({ content: '处理中...', duration: 0 });
@@ -49,14 +52,14 @@ function handleRowCheckboxChange({ records }: { records: BlogCommentApi.Comment[
 
 async function handleBatchDelete() {
   if (isEmpty(checkedIds.value)) return;
-  confirm({
-    content: $t('ui.actionMessage.deleteConfirm', [`选中的 ${checkedIds.value.length} 条`]),
-    async onConfirm() {
-      await Promise.all(checkedIds.value.map((id) => deleteComment(id)));
-      message.success($t('ui.actionMessage.deleteSuccess', ['批量数据']));
-      gridApi.query();
-    },
-  });
+  try {
+    await confirm($t('ui.actionMessage.deleteConfirm', [`选中的 ${checkedIds.value.length} 条`]));
+  } catch {
+    return;
+  }
+  await Promise.all(checkedIds.value.map((id) => deleteComment(id)));
+  message.success($t('ui.actionMessage.deleteSuccess', ['批量数据']));
+  gridApi.query();
 }
 
 const detail = ref<BlogCommentApi.Comment | null>(null);

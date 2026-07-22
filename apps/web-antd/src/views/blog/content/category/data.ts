@@ -1,8 +1,6 @@
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import type { BlogCategoryApi } from '#/api/blog/content/category';
-
 /** 编辑表单 Schema */
 export function useFormSchema(): VbenFormSchema[] {
   return [

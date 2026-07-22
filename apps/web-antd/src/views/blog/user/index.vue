@@ -4,8 +4,6 @@ import type { BlogUserApi } from '#/api/blog/user';
 
 import { ref } from 'vue';
 import { confirm, Page, useVbenModal } from '@vben/common-ui';
-
-defineOptions({ name: 'BlogUser' });
 import { isEmpty } from '@vben/utils';
 import { message } from 'ant-design-vue';
 
@@ -16,8 +14,12 @@ import {
   updateUserStatus,
 } from '#/api/blog/user';
 import { $t } from '#/locales';
-import { useFormSchema, useGridColumns, useGridFormSchema } from './data';
+
+import { useGridColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
+
+/** 博客用户管理 */
+defineOptions({ name: 'BlogUser' });
 
 const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
@@ -68,14 +70,14 @@ function handleRowCheckboxChange({ records }: { records: BlogUserApi.User[] }) {
 
 async function handleBatchDelete() {
   if (isEmpty(checkedIds.value)) return;
-  confirm({
-    content: $t('ui.actionMessage.deleteConfirm', [`选中的 ${checkedIds.value.length} 条`]),
-    async onConfirm() {
-      await Promise.all(checkedIds.value.map((id) => deleteUser(id)));
-      message.success($t('ui.actionMessage.deleteSuccess', ['批量数据']));
-      handleRefresh();
-    },
-  });
+  try {
+    await confirm($t('ui.actionMessage.deleteConfirm', [`选中的 ${checkedIds.value.length} 条`]));
+  } catch {
+    return;
+  }
+  await Promise.all(checkedIds.value.map((id) => deleteUser(id)));
+  message.success($t('ui.actionMessage.deleteSuccess', ['批量数据']));
+  handleRefresh();
 }
 
 const [Grid, gridApi] = useVbenVxeGrid({

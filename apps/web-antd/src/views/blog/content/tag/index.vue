@@ -4,21 +4,21 @@ import type { BlogTagApi } from '#/api/blog/content/tag';
 
 import { ref } from 'vue';
 import { confirm, Page, useVbenModal } from '@vben/common-ui';
-
-defineOptions({ name: 'BlogTag' });
 import { isEmpty } from '@vben/utils';
 import { message } from 'ant-design-vue';
 
 import { ACTION_ICON, TableAction, useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  createTag,
   deleteTag,
   getTagPage,
-  updateTag,
 } from '#/api/blog/content/tag';
 import { $t } from '#/locales';
-import { useFormSchema, useGridColumns, useGridFormSchema } from './data';
+
+import { useGridColumns, useGridFormSchema } from './data';
 import Form from './modules/form.vue';
+
+/** 标签管理 */
+defineOptions({ name: 'BlogTag' });
 
 const [FormModal, formModalApi] = useVbenModal({
   connectedComponent: Form,
@@ -57,14 +57,14 @@ function handleRowCheckboxChange({ records }: { records: BlogTagApi.Tag[] }) {
 
 async function handleBatchDelete() {
   if (isEmpty(checkedIds.value)) return;
-  confirm({
-    content: $t('ui.actionMessage.deleteConfirm', [`选中的 ${checkedIds.value.length} 条`]),
-    async onConfirm() {
-      await Promise.all(checkedIds.value.map((id) => deleteTag(id)));
-      message.success($t('ui.actionMessage.deleteSuccess', ['批量数据']));
-      handleRefresh();
-    },
-  });
+  try {
+    await confirm($t('ui.actionMessage.deleteConfirm', [`选中的 ${checkedIds.value.length} 条`]));
+  } catch {
+    return;
+  }
+  await Promise.all(checkedIds.value.map((id) => deleteTag(id)));
+  message.success($t('ui.actionMessage.deleteSuccess', ['批量数据']));
+  handleRefresh();
 }
 
 const [Grid, gridApi] = useVbenVxeGrid({
